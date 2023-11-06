@@ -1,0 +1,17 @@
+GmailHostConfig:
+  EmailSender: testing.email.it2k2@gmail.com
+  Password: rqbpvoesfcrdjyfo
+  StmpHost: smtp.gmail.com
+  StmpPort: 587
+
+EmailTemplate:
+  OrderTemplate: order_template.html
+  RegisterTemplate: register_template.html
+  ForgotPassTemplate: forgotPass_template.html
+
+
+RabbitMQ:
+  Connection: amqp://guest:guest@localhost:5672/
+  Exchange:
+  Queue: email_notify_queue
+  ProducerName: email_service
