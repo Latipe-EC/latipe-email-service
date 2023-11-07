@@ -21,9 +21,10 @@ type GmailHostConfig struct {
 }
 
 type EmailTemplate struct {
-	OrderTemplate      string
-	RegisterTemplate   string
-	ForgotPassTemplate string
+	OrderTemplate       string
+	RegisterTemplate    string
+	ForgotPassTemplate  string
+	ConfirmLinkTemplate string
 }
 
 type RabbitMQ struct {

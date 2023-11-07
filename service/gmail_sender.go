@@ -59,7 +59,7 @@ func (g GmailSenderEmail) SendRegisterEmail(message *dto.EmailRequest) error {
 		g.cfg.GmailHostConfig.Password, g.cfg.GmailHostConfig.StmpHost)
 
 	// Sending email.
-	t, err := template.ParseFiles(g.cfg.EmailTemplate.OrderTemplate)
+	t, err := template.ParseFiles(g.cfg.EmailTemplate.ConfirmLinkTemplate)
 	if err != nil {
 		return err
 	}
@@ -71,11 +71,11 @@ func (g GmailSenderEmail) SendRegisterEmail(message *dto.EmailRequest) error {
 
 	t.Execute(&body, struct {
 		Title   string
-		URL     string
+		Url     string
 		Message string
 	}{
 		Title:   "Xác nhận email đăng ký tài khoản",
-		URL:     message.Url,
+		Url:     message.Url,
 		Message: "Hoàn thành xác nhận đăng ký tài khoản để sử dụng các chức năng của hệ thống",
 	})
 
@@ -94,7 +94,7 @@ func (g GmailSenderEmail) SendForgotPassword(message *dto.EmailRequest) error {
 		g.cfg.GmailHostConfig.Password, g.cfg.GmailHostConfig.StmpHost)
 
 	// Sending email.
-	t, err := template.ParseFiles(g.cfg.EmailTemplate.OrderTemplate)
+	t, err := template.ParseFiles(g.cfg.EmailTemplate.ConfirmLinkTemplate)
 	if err != nil {
 		return err
 	}
@@ -106,11 +106,11 @@ func (g GmailSenderEmail) SendForgotPassword(message *dto.EmailRequest) error {
 
 	t.Execute(&body, struct {
 		Title   string
-		URL     string
+		Url     string
 		Message string
 	}{
 		Title:   "Đặt lại mật khẩu",
-		URL:     message.Url,
+		Url:     message.Url,
 		Message: "Click vào link bên dưới để tạo mật khẩu mới cho tài khoản",
 	})
 
