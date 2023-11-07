@@ -8,10 +8,12 @@ EmailTemplate:
   OrderTemplate: order_template.html
   RegisterTemplate: register_template.html
   ForgotPassTemplate: forgotPass_template.html
+  ConfirmLinkTemplate: confirm_link_template.html
 
 
 RabbitMQ:
   Connection: amqp://guest:guest@localhost:5672/
-  Exchange:
+  Exchange: email_exchange
+  RoutingKey: email_routing_key
   Queue: email_notify_queue
   ProducerName: email_service

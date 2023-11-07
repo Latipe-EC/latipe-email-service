@@ -29,6 +29,7 @@ type EmailTemplate struct {
 type RabbitMQ struct {
 	Connection   string
 	Exchange     string
+	RoutingKey   string
 	Queue        string
 	ConsumerName string
 	ProducerName string

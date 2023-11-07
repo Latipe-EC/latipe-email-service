@@ -31,6 +31,43 @@ func (mq ConsumerOrderMessage) ListenMessageQueue() {
 	defer channel.Close()
 	defer conn.Close()
 
+	// Khai báo một Exchange loại "direct"
+	err = channel.ExchangeDeclare(
+		mq.config.RabbitMQ.Exchange, // Tên Exchange
+		"direct",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("cannot declare exchange: %v", err)
+	}
+
+	// Tạo hàng đợi
+	_, err = channel.QueueDeclare(
+		mq.config.RabbitMQ.Queue,
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("cannot declare queue: %v", err)
+	}
+
+	err = channel.QueueBind(
+		mq.config.RabbitMQ.Queue,
+		mq.config.RabbitMQ.RoutingKey,
+		mq.config.RabbitMQ.Exchange,
+		false,
+		nil)
+	if err != nil {
+		log.Fatalf("cannot bind exchange: %v", err)
+	}
+
 	// declaring consumer with its properties over channel opened
 	msgs, err := channel.Consume(
 		mq.config.RabbitMQ.Queue,        // queue
