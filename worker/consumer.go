@@ -82,6 +82,10 @@ func (mq ConsumerOrderMessage) ListenMessageQueue() {
 		panic(err)
 	}
 
+	log.Printf("[%s] message queue has started", "INFO")
+	log.Printf("[%s] waiting for messages...", "INFO")
+
+	var waitingGoroutine chan struct{}
 	// handle consumed messages from queue
 	for msg := range msgs {
 		log.Printf("[%s] received message from: %s", "INFO", msg.RoutingKey)
@@ -91,10 +95,7 @@ func (mq ConsumerOrderMessage) ListenMessageQueue() {
 		}
 
 	}
-
-	log.Printf("[%s] message queue has started", "INFO")
-	log.Printf("[%s] waiting for messages...", "INFO")
-
+	<-waitingGoroutine
 }
 
 func (mq ConsumerOrderMessage) orderHandler(msg amqp.Delivery) error {

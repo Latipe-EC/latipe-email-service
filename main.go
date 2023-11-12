@@ -19,11 +19,6 @@ func main() {
 	gmailWorker := message.NewConsumerEmailWorker(globalCfg, gmailSender)
 	log.Printf("Create connection to queue")
 
-	listenQueue := make(chan bool)
-
-	go func() {
-		gmailWorker.ListenMessageQueue()
-	}()
-	<-listenQueue
+	gmailWorker.ListenMessageQueue()
 
 }
