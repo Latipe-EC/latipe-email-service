@@ -9,11 +9,18 @@ EmailTemplate:
   RegisterTemplate: register_template.html
   ForgotPassTemplate: forgotPass_template.html
   ConfirmLinkTemplate: confirm_link_template.html
+  DeliveryAccountTemplate: delivery_template.html
 
 
 RabbitMQ:
   Connection: amqp://guest:guest@localhost:5672/
-  Exchange: email_exchange
-  RoutingKey: email_routing_key
-  Queue: email_notify_queue
   ProducerName: email_service
+  ConsumerName: email_service
+  Exchange: email_topic_exchange
+
+  OrderEmailTopic:
+    RoutingKey: email.order
+  UserRegisterTopic:
+    RoutingKey: email.user.register
+  DeliveryRegisterTopic:
+    RoutingKey: email.delivery.register

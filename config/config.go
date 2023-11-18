@@ -21,19 +21,33 @@ type GmailHostConfig struct {
 }
 
 type EmailTemplate struct {
-	OrderTemplate       string
-	RegisterTemplate    string
-	ForgotPassTemplate  string
-	ConfirmLinkTemplate string
+	OrderTemplate           string
+	RegisterTemplate        string
+	ForgotPassTemplate      string
+	ConfirmLinkTemplate     string
+	DeliveryAccountTemplate string
 }
 
 type RabbitMQ struct {
-	Connection   string
-	Exchange     string
-	RoutingKey   string
-	Queue        string
-	ConsumerName string
-	ProducerName string
+	Connection            string
+	Exchange              string
+	ConsumerName          string
+	ProducerName          string
+	OrderEmailTopic       OrderEmailTopic
+	UserRegisterTopic     UserRegisterTopic
+	DeliveryRegisterTopic DeliveryRegisterTopic
+}
+
+type OrderEmailTopic struct {
+	RoutingKey string
+}
+
+type UserRegisterTopic struct {
+	RoutingKey string
+}
+
+type DeliveryRegisterTopic struct {
+	RoutingKey string
 }
 
 // Get config path for local or docker

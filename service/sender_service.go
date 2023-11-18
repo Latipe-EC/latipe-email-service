@@ -3,8 +3,8 @@ package service
 import "email-service/data/dto"
 
 type SenderEmailService interface {
-	SendOrderEmail(message *dto.EmailRequest) error
-	ConfirmLinkEmail(message *dto.EmailRequest) error
-	SendRegisterEmail(message *dto.EmailRequest) error
-	SendForgotPassword(message *dto.EmailRequest) error
+	SendOrderEmail(message *dto.OrderMessage) error
+	SendRegisterEmail(message *dto.UserRegisterMessage) error
+	SendForgotPassword(message *dto.OrderMessage) error
+	SendDeliveryAccount(message *dto.DeliveryAccountMessage) error
 }

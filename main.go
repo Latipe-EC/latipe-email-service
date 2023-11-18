@@ -5,6 +5,7 @@ import (
 	"email-service/service"
 	message "email-service/worker"
 	"log"
+	"sync"
 )
 
 func main() {
@@ -16,9 +17,25 @@ func main() {
 
 	gmailSender := service.NewGmailSenderEmail(globalCfg)
 
-	gmailWorker := message.NewConsumerEmailWorker(globalCfg, gmailSender)
-	log.Printf("Create connection to queue")
+	orderMessageWorker := message.NewConsumerOrderWorker(globalCfg, gmailSender)
+	log.Printf("OrderMessage subscriber was created")
 
-	gmailWorker.ListenMessageQueue()
+	userRegisterWorker := message.NewConsumerUserRegisterWorker(globalCfg, gmailSender)
+	log.Printf("UserRegister subscriber was created")
+
+	deliveryAccountWorker := message.NewConsumerDeliveryWorker(globalCfg, gmailSender)
+	log.Printf("DeliveryAccount subscriber was created")
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go userRegisterWorker.ListenMessageQueue(&wg)
+
+	wg.Add(1)
+	go orderMessageWorker.ListenMessageQueue(&wg)
+
+	wg.Add(1)
+	go deliveryAccountWorker.ListenMessageQueue(&wg)
+
+	wg.Wait()
 
 }

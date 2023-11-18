@@ -6,6 +6,7 @@ import (
 	"email-service/service"
 	"encoding/json"
 	"log"
+	"sync"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -15,17 +16,17 @@ type ConsumerOrderMessage struct {
 	emailSender service.SenderEmailService
 }
 
-func NewConsumerEmailWorker(config *config.Config, senderService service.SenderEmailService) *ConsumerOrderMessage {
+func NewConsumerOrderWorker(config *config.Config, senderService service.SenderEmailService) *ConsumerOrderMessage {
 	return &ConsumerOrderMessage{
 		config:      config,
 		emailSender: senderService,
 	}
 }
 
-func (mq ConsumerOrderMessage) ListenMessageQueue() {
+func (mq ConsumerOrderMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 	conn, err := amqp.Dial(mq.config.RabbitMQ.Connection)
 	failOnError(err, "Failed to connect to RabbitMQ")
-	log.Printf("[%s] Comsumer has been connected", "INFO")
+	log.Printf("[%s] [%s] Comsumer has been connected", "INFO", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey)
 
 	channel, err := conn.Channel()
 	defer channel.Close()
@@ -34,7 +35,7 @@ func (mq ConsumerOrderMessage) ListenMessageQueue() {
 	// Khai báo một Exchange loại "direct"
 	err = channel.ExchangeDeclare(
 		mq.config.RabbitMQ.Exchange, // Tên Exchange
-		"direct",
+		"topic",
 		true,
 		false,
 		false,
@@ -46,21 +47,22 @@ func (mq ConsumerOrderMessage) ListenMessageQueue() {
 	}
 
 	// Tạo hàng đợi
-	_, err = channel.QueueDeclare(
-		mq.config.RabbitMQ.Queue,
+	q, err := channel.QueueDeclare(
+		"",
 		true,
 		false,
 		false,
 		false,
 		nil,
 	)
+
 	if err != nil {
 		log.Fatalf("cannot declare queue: %v", err)
 	}
 
 	err = channel.QueueBind(
-		mq.config.RabbitMQ.Queue,
-		mq.config.RabbitMQ.RoutingKey,
+		q.Name,
+		mq.config.RabbitMQ.OrderEmailTopic.RoutingKey,
 		mq.config.RabbitMQ.Exchange,
 		false,
 		nil)
@@ -70,7 +72,7 @@ func (mq ConsumerOrderMessage) ListenMessageQueue() {
 
 	// declaring consumer with its properties over channel opened
 	msgs, err := channel.Consume(
-		mq.config.RabbitMQ.Queue,        // queue
+		q.Name,                          // queue
 		mq.config.RabbitMQ.ConsumerName, // consumer
 		true,                            // auto ack
 		false,                           // exclusive
@@ -82,40 +84,29 @@ func (mq ConsumerOrderMessage) ListenMessageQueue() {
 		panic(err)
 	}
 
-	log.Printf("[%s] message queue has started", "INFO")
-	log.Printf("[%s] waiting for messages...", "INFO")
+	log.Printf("[%s] [%s] message queue has started", "INFO", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey)
+	log.Printf("[%s] [%s] waiting for messages...", "INFO", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey)
 
-	var waitingGoroutine chan struct{}
 	// handle consumed messages from queue
+	defer wg.Done()
 	for msg := range msgs {
-		log.Printf("[%s] received message from: %s", "INFO", msg.RoutingKey)
+		log.Printf("[%s] received order message from: %s", "INFO", msg.RoutingKey)
 
-		if err := mq.orderHandler(msg); err != nil {
-			log.Printf("[%s] The order creation failed cause %s", "ERROR", err)
+		if err := mq.handleMessage(msg); err != nil {
+			log.Printf("[%s] [%s] Handling message was failed cause %s", "ERROR", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey, err)
 		}
-
 	}
-	<-waitingGoroutine
 }
 
-func (mq ConsumerOrderMessage) orderHandler(msg amqp.Delivery) error {
-	message := dto.EmailRequest{}
+func (mq ConsumerOrderMessage) handleMessage(msg amqp.Delivery) error {
+	message := dto.OrderMessage{}
 
 	if err := json.Unmarshal(msg.Body, &message); err != nil {
 		log.Printf("[%s] Parse message to order failed cause: %s", "ERROR", err)
 		return err
 	}
 
-	var err error
-	switch message.Type {
-	case dto.ORDER:
-		err = mq.emailSender.SendOrderEmail(&message)
-	case dto.REGISTER:
-		err = mq.emailSender.SendForgotPassword(&message)
-	case dto.FORGOT:
-		err = mq.emailSender.SendRegisterEmail(&message)
-	}
-	if err != nil {
+	if err := mq.emailSender.SendOrderEmail(&message); err != nil {
 		log.Printf("[%s] send email was failed cause: %s", "ERROR", err)
 	}
 
