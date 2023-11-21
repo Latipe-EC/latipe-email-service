@@ -24,6 +24,7 @@ func (g GmailSenderEmail) SendOrderEmail(message *dto.OrderMessage) error {
 	auth := smtp.PlainAuth("", g.cfg.GmailHostConfig.EmailSender,
 		g.cfg.GmailHostConfig.Password, g.cfg.GmailHostConfig.StmpHost)
 
+	confirmUrl := fmt.Sprintf("%s/auth/verify-account/%s", g.cfg.HostURL, message.Code)
 	// Sending email.
 	t, err := template.ParseFiles(g.cfg.EmailTemplate.OrderTemplate)
 	if err != nil {
@@ -42,7 +43,7 @@ func (g GmailSenderEmail) SendOrderEmail(message *dto.OrderMessage) error {
 		ID   string
 	}{
 		Name: message.Name,
-		URL:  message.Url,
+		URL:  confirmUrl,
 		ID:   strings.ToUpper(OrderID),
 	})
 
@@ -65,6 +66,7 @@ func (g GmailSenderEmail) SendRegisterEmail(message *dto.UserRegisterMessage) er
 	if err != nil {
 		return err
 	}
+	confirmUrl := fmt.Sprintf("%s/auth/verify-account/%s", g.cfg.HostURL, message.Token)
 
 	var body bytes.Buffer
 
@@ -77,12 +79,12 @@ func (g GmailSenderEmail) SendRegisterEmail(message *dto.UserRegisterMessage) er
 		Message string
 	}{
 		Title:   "Xác nhận email đăng ký tài khoản",
-		Url:     message.Url,
+		Url:     confirmUrl,
 		Message: "Hoàn thành xác nhận đăng ký tài khoản để sử dụng các chức năng của hệ thống",
 	})
 
 	err = smtp.SendMail(g.cfg.GmailHostConfig.StmpHost+":"+g.cfg.GmailHostConfig.StmpPort, auth,
-		"noreply@latipe.vn", []string{message.EmailRecipient}, body.Bytes())
+		"noreply@latipe.vn", []string{message.Email}, body.Bytes())
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -91,7 +93,7 @@ func (g GmailSenderEmail) SendRegisterEmail(message *dto.UserRegisterMessage) er
 	return nil
 }
 
-func (g GmailSenderEmail) SendForgotPassword(message *dto.OrderMessage) error {
+func (g GmailSenderEmail) SendForgotPassword(message *dto.ForgotPasswordMessage) error {
 	auth := smtp.PlainAuth("", g.cfg.GmailHostConfig.EmailSender,
 		g.cfg.GmailHostConfig.Password, g.cfg.GmailHostConfig.StmpHost)
 
@@ -106,18 +108,20 @@ func (g GmailSenderEmail) SendForgotPassword(message *dto.OrderMessage) error {
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	body.Write([]byte(fmt.Sprintf("Subject: [Latipe] Xác nhận yêu cầu quên mật khẩu ! \n%s\n\n", mimeHeaders)))
 
+	confirmUrl := fmt.Sprintf("%s/auth/verify-account/%s", g.cfg.HostURL, message.Token)
+
 	t.Execute(&body, struct {
 		Title   string
 		Url     string
 		Message string
 	}{
 		Title:   "Đặt lại mật khẩu",
-		Url:     message.Url,
+		Url:     confirmUrl,
 		Message: "Click vào link bên dưới để tạo mật khẩu mới cho tài khoản",
 	})
 
 	err = smtp.SendMail(g.cfg.GmailHostConfig.StmpHost+":"+g.cfg.GmailHostConfig.StmpPort, auth,
-		"noreply@latipe.vn", []string{message.EmailRecipient}, body.Bytes())
+		"noreply@latipe.vn", []string{message.Email}, body.Bytes())
 	if err != nil {
 		fmt.Println(err)
 		return err

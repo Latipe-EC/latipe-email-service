@@ -24,3 +24,7 @@ RabbitMQ:
     RoutingKey: email.user.register
   DeliveryRegisterTopic:
     RoutingKey: email.delivery.register
+  ForgotPasswordTopic:
+    RoutingKey: email.forgot_password
+    
+HostURL: http://localhost:5173

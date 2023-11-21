@@ -11,6 +11,7 @@ type Config struct {
 	GmailHostConfig GmailHostConfig
 	EmailTemplate   EmailTemplate
 	RabbitMQ        RabbitMQ
+	HostURL         string
 }
 
 type GmailHostConfig struct {
@@ -36,6 +37,7 @@ type RabbitMQ struct {
 	OrderEmailTopic       OrderEmailTopic
 	UserRegisterTopic     UserRegisterTopic
 	DeliveryRegisterTopic DeliveryRegisterTopic
+	ForgotPasswordTopic   ForgotPasswordTopic
 }
 
 type OrderEmailTopic struct {
@@ -47,6 +49,10 @@ type UserRegisterTopic struct {
 }
 
 type DeliveryRegisterTopic struct {
+	RoutingKey string
+}
+
+type ForgotPasswordTopic struct {
 	RoutingKey string
 }
 
