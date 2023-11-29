@@ -140,6 +140,7 @@ func (g GmailSenderEmail) SendDeliveryAccount(message *dto.DeliveryAccountMessag
 		return err
 	}
 
+	url := g.cfg.HostURL + "/login"
 	var body bytes.Buffer
 
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
@@ -152,11 +153,11 @@ func (g GmailSenderEmail) SendDeliveryAccount(message *dto.DeliveryAccountMessag
 	}{
 		Email:    message.Email,
 		Password: message.Password,
-		Url:      "www.google.com",
+		Url:      url,
 	})
 
 	err = smtp.SendMail(g.cfg.GmailHostConfig.StmpHost+":"+g.cfg.GmailHostConfig.StmpPort, auth,
-		"noreply@latipe.vn", []string{message.EmailRecipient}, body.Bytes())
+		"noreply@latipe.vn", []string{message.Email}, body.Bytes())
 	if err != nil {
 		fmt.Println(err)
 		return err
