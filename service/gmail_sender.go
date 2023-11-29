@@ -140,7 +140,7 @@ func (g GmailSenderEmail) SendDeliveryAccount(message *dto.DeliveryAccountMessag
 		return err
 	}
 
-	url := g.cfg.HostURL + "/login"
+	url := g.cfg.HostURL + "/auth/active?token=" + message.Token
 	var body bytes.Buffer
 
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
