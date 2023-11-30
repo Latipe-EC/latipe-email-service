@@ -24,7 +24,7 @@ func (g GmailSenderEmail) SendOrderEmail(message *dto.OrderMessage) error {
 	auth := smtp.PlainAuth("", g.cfg.GmailHostConfig.EmailSender,
 		g.cfg.GmailHostConfig.Password, g.cfg.GmailHostConfig.StmpHost)
 
-	confirmUrl := fmt.Sprintf("%s/auth/verify-account/%s", g.cfg.HostURL, message.Code)
+	confirmUrl := fmt.Sprintf("%s/order/%s", g.cfg.HostURL, message.OrderId)
 	// Sending email.
 	t, err := template.ParseFiles(g.cfg.EmailTemplate.OrderTemplate)
 	if err != nil {
