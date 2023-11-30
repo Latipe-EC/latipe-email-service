@@ -36,7 +36,6 @@ func (g GmailSenderEmail) SendOrderEmail(message *dto.OrderMessage) error {
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	body.Write([]byte(fmt.Sprintf("Subject: [Latipe] Xác nhận đơn hàng thành công ! \n%s\n\n", mimeHeaders)))
 
-	OrderID := "***" + message.OrderId[24:]
 	t.Execute(&body, struct {
 		Name string
 		URL  string
@@ -44,7 +43,7 @@ func (g GmailSenderEmail) SendOrderEmail(message *dto.OrderMessage) error {
 	}{
 		Name: message.Name,
 		URL:  confirmUrl,
-		ID:   strings.ToUpper(OrderID),
+		ID:   strings.ToUpper(message.OrderId),
 	})
 
 	err = smtp.SendMail(g.cfg.GmailHostConfig.StmpHost+":"+g.cfg.GmailHostConfig.StmpPort, auth,
