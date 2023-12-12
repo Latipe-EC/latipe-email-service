@@ -7,4 +7,5 @@ type SenderEmailService interface {
 	SendRegisterEmail(message *dto.UserRegisterMessage) error
 	SendForgotPassword(message *dto.ForgotPasswordMessage) error
 	SendDeliveryAccount(message *dto.DeliveryAccountMessage) error
+	SendTakeoutPayment(message *dto.PaymentMessage) error
 }

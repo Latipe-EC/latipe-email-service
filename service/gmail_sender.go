@@ -164,3 +164,41 @@ func (g GmailSenderEmail) SendDeliveryAccount(message *dto.DeliveryAccountMessag
 	log.Printf("[Delivery email] the email was sent successful at %v", time.Now())
 	return nil
 }
+
+func (g GmailSenderEmail) SendTakeoutPayment(message *dto.PaymentMessage) error {
+	auth := smtp.PlainAuth("", g.cfg.GmailHostConfig.EmailSender,
+		g.cfg.GmailHostConfig.Password, g.cfg.GmailHostConfig.StmpHost)
+
+	// Sending email.
+	t, err := template.ParseFiles(g.cfg.EmailTemplate.ConfirmTakeoutTemplate)
+	if err != nil {
+		return err
+	}
+
+	url := g.cfg.HostURL + "/payment/store/confirm?token=" + message.Token
+	var body bytes.Buffer
+
+	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	body.Write([]byte(fmt.Sprintf("Subject: [Latipe] Thông báo tạo tài khoản đối tác ! \n%s\n\n", mimeHeaders)))
+
+	t.Execute(&body, struct {
+		Email  string
+		Type   string
+		Amount int
+		Url    string
+	}{
+		Email:  message.Email,
+		Type:   message.Type,
+		Url:    url,
+		Amount: message.Amount,
+	})
+
+	err = smtp.SendMail(g.cfg.GmailHostConfig.StmpHost+":"+g.cfg.GmailHostConfig.StmpPort, auth,
+		"noreply@latipe.vn", []string{message.Email}, body.Bytes())
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	log.Printf("[Delivery email] the email was sent successful at %v", time.Now())
+	return nil
+}

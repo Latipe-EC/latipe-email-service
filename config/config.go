@@ -27,6 +27,7 @@ type EmailTemplate struct {
 	ForgotPassTemplate      string
 	ConfirmLinkTemplate     string
 	DeliveryAccountTemplate string
+	ConfirmTakeoutTemplate  string
 }
 
 type RabbitMQ struct {
@@ -38,6 +39,7 @@ type RabbitMQ struct {
 	UserRegisterTopic     UserRegisterTopic
 	DeliveryRegisterTopic DeliveryRegisterTopic
 	ForgotPasswordTopic   ForgotPasswordTopic
+	TakeoutConfirmTopic   TakeoutConfirmTopic
 }
 
 type OrderEmailTopic struct {
@@ -49,6 +51,10 @@ type UserRegisterTopic struct {
 }
 
 type DeliveryRegisterTopic struct {
+	RoutingKey string
+}
+
+type TakeoutConfirmTopic struct {
 	RoutingKey string
 }
 

@@ -10,6 +10,7 @@ EmailTemplate:
   ForgotPassTemplate: forgotPass_template.html
   ConfirmLinkTemplate: confirm_link_template.html
   DeliveryAccountTemplate: delivery_template.html
+  ConfirmTakeoutTemplate: delivery_template.html
 
 
 RabbitMQ:
@@ -26,5 +27,7 @@ RabbitMQ:
     RoutingKey: email.delivery.register
   ForgotPasswordTopic:
     RoutingKey: email.forgot_password
-    
+  TakeoutConfirmTopic:
+    RoutingKey: email.payment.withdraw
+
 HostURL: http://localhost:5173

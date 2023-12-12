@@ -27,7 +27,10 @@ func main() {
 	log.Printf("DeliveryAccount subscriber was created")
 
 	forgotPasswordWorker := message.NewConsumerForgotPasswordWorker(globalCfg, gmailSender)
-	log.Printf("forgotPassword subscriber was created")
+	log.Printf("ForgotPassword subscriber was created")
+
+	paymentWorker := message.NewConsumerPaymentWorker(globalCfg, gmailSender)
+	log.Printf("Payment subscriber was created")
 
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -41,6 +44,9 @@ func main() {
 
 	wg.Add(1)
 	go forgotPasswordWorker.ListenMessageQueue(&wg)
+
+	wg.Add(1)
+	go paymentWorker.ListenMessageQueue(&wg)
 
 	wg.Wait()
 
