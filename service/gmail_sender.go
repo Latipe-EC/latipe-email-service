@@ -107,7 +107,7 @@ func (g GmailSenderEmail) SendForgotPassword(message *dto.ForgotPasswordMessage)
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	body.Write([]byte(fmt.Sprintf("Subject: [Latipe] Xác nhận yêu cầu quên mật khẩu ! \n%s\n\n", mimeHeaders)))
 
-	confirmUrl := fmt.Sprintf("%s/auth/verify-account/%s", g.cfg.HostURL, message.Token)
+	confirmUrl := fmt.Sprintf("%s/auth/reset-password/%s", g.cfg.HostURL, message.Token)
 
 	t.Execute(&body, struct {
 		Title   string
@@ -175,7 +175,7 @@ func (g GmailSenderEmail) SendTakeoutPayment(message *dto.PaymentMessage) error 
 		return err
 	}
 
-	url := g.cfg.HostURL + "/payment/store/confirm?token=" + message.Token
+	url := g.cfg.HostURL + "/withdraw-success/" + message.Token
 	var body bytes.Buffer
 
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
