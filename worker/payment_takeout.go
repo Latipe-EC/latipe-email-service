@@ -16,8 +16,8 @@ type ConsumerPaymentMessage struct {
 	emailSender service.SenderEmailService
 }
 
-func NewConsumerPaymentWorker(config *config.Config, senderService service.SenderEmailService) *ConsumerOrderMessage {
-	return &ConsumerOrderMessage{
+func NewConsumerPaymentWorker(config *config.Config, senderService service.SenderEmailService) *ConsumerPaymentMessage {
+	return &ConsumerPaymentMessage{
 		config:      config,
 		emailSender: senderService,
 	}
@@ -84,8 +84,8 @@ func (mq ConsumerPaymentMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 		panic(err)
 	}
 
-	log.Printf("[%s] [%s] message queue has started", "INFO", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey)
-	log.Printf("[%s] [%s] waiting for messages...", "INFO", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey)
+	log.Printf("[%s] [%s] message queue has started", "INFO", mq.config.RabbitMQ.TakeoutConfirmTopic.RoutingKey)
+	log.Printf("[%s] [%s] waiting for messages...", "INFO", mq.config.RabbitMQ.TakeoutConfirmTopic.RoutingKey)
 
 	// handle consumed messages from queue
 	defer wg.Done()
@@ -93,7 +93,7 @@ func (mq ConsumerPaymentMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 		log.Printf("[%s] received order message from: %s", "INFO", msg.RoutingKey)
 
 		if err := mq.handleMessage(msg); err != nil {
-			log.Printf("[%s] [%s] Handling message was failed cause %s", "ERROR", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey, err)
+			log.Printf("[%s] [%s] Handling message was failed cause %s", "ERROR", mq.config.RabbitMQ.TakeoutConfirmTopic.RoutingKey, err)
 		}
 	}
 }
