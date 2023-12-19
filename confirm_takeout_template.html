@@ -264,7 +264,7 @@
 
                                                 <div style="font-size: 14px; line-height: 160%; text-align: center; word-wrap: break-word;">
                                                     <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 22px; line-height: 35.2px;">Xin chào nhà bán hàng, </span></p>
-                                                    <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 18px; line-height: 28.8px;">Chúng tôi nhận được yêu cầu rút tiền về tài khoản với hình thức { .Type } <br>Email: { .Email } <br>Số tiền là: { .Amount }</span></p>
+                                                    <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 18px; line-height: 28.8px;">Chúng tôi nhận được yêu cầu rút tiền về tài khoản với hình thức {{ .Type }} <br>Email: {{ .Email }} <br>Số tiền là: {{ .Amount }}</span></p>
                                                     <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 18px; line-height: 28.8px;">Nếu là bạn vui lòng&nbsp; nhấn xác nhận ở phía dưới xin cảm ơn !</span></p>
                                                 </div>
 
@@ -283,7 +283,7 @@
                                                     <!--[if mso]>
                                                     <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
                                                                  xmlns:w="urn:schemas-microsoft-com:office:word"
-                                                                 href="{ .Url }"
+                                                                 href="{{ .Url }}"
                                                                  style="height:46px; v-text-anchor:middle; width:166px;"
                                                                  arcsize="8.5%" stroke="f" fillcolor="#ff6600">
                                                         <w:anchorlock/>
