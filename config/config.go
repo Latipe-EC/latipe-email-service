@@ -35,11 +35,18 @@ type RabbitMQ struct {
 	Exchange              string
 	ConsumerName          string
 	ProducerName          string
-	OrderEmailTopic       OrderEmailTopic
 	UserRegisterTopic     UserRegisterTopic
 	DeliveryRegisterTopic DeliveryRegisterTopic
 	ForgotPasswordTopic   ForgotPasswordTopic
 	TakeoutConfirmTopic   TakeoutConfirmTopic
+	TransactionPublisher  TransactionPublisher
+}
+
+type TransactionPublisher struct {
+	Exchange           string
+	CommitRoutingKey   string
+	RollbackRoutingKey string
+	ReplyRoutingKey    string
 }
 
 type OrderEmailTopic struct {

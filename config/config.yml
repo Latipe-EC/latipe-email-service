@@ -19,8 +19,6 @@ RabbitMQ:
   ConsumerName: email_service
   Exchange: email_topic_exchange
 
-  OrderEmailTopic:
-    RoutingKey: email.order
   UserRegisterTopic:
     RoutingKey: email.user.register
   DeliveryRegisterTopic:
@@ -29,5 +27,14 @@ RabbitMQ:
     RoutingKey: email.forgot_password
   TakeoutConfirmTopic:
     RoutingKey: email.payment.withdraw
+
+  TransactionPublisher:
+    Exchange: order_transaction_ex
+    CommitRoutingKey: order.email.create
+    RollbackRoutingKey: order.email.rollback
+    ReplyRoutingKey: order.email.reply
+
+
+
 
 HostURL: http://localhost:5173

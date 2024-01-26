@@ -26,7 +26,8 @@ func NewConsumerOrderWorker(config *config.Config, senderService service.SenderE
 func (mq ConsumerOrderMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 	conn, err := amqp.Dial(mq.config.RabbitMQ.Connection)
 	failOnError(err, "Failed to connect to RabbitMQ")
-	log.Printf("[%s] [%s] Comsumer has been connected", "INFO", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey)
+	log.Printf("[%s] [%s] Comsumer has been connected",
+		"INFO", mq.config.RabbitMQ.TransactionPublisher.CommitRoutingKey)
 
 	channel, err := conn.Channel()
 	defer channel.Close()
@@ -62,8 +63,8 @@ func (mq ConsumerOrderMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 
 	err = channel.QueueBind(
 		q.Name,
-		mq.config.RabbitMQ.OrderEmailTopic.RoutingKey,
-		mq.config.RabbitMQ.Exchange,
+		mq.config.RabbitMQ.TransactionPublisher.CommitRoutingKey,
+		mq.config.RabbitMQ.TransactionPublisher.Exchange,
 		false,
 		nil)
 	if err != nil {
@@ -84,8 +85,8 @@ func (mq ConsumerOrderMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 		panic(err)
 	}
 
-	log.Printf("[%s] [%s] message queue has started", "INFO", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey)
-	log.Printf("[%s] [%s] waiting for messages...", "INFO", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey)
+	log.Printf("[%s] [%s] message queue has started", "INFO", mq.config.RabbitMQ.TransactionPublisher.CommitRoutingKey)
+	log.Printf("[%s] [%s] waiting for messages...", "INFO", mq.config.RabbitMQ.TransactionPublisher.CommitRoutingKey)
 
 	// handle consumed messages from queue
 	defer wg.Done()
@@ -93,7 +94,7 @@ func (mq ConsumerOrderMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 		log.Printf("[%s] received order message from: %s", "INFO", msg.RoutingKey)
 
 		if err := mq.handleMessage(msg); err != nil {
-			log.Printf("[%s] [%s] Handling message was failed cause %s", "ERROR", mq.config.RabbitMQ.OrderEmailTopic.RoutingKey, err)
+			log.Printf("[%s] [%s] Handling message was failed cause %s", "ERROR", mq.config.RabbitMQ.TransactionPublisher.CommitRoutingKey, err)
 		}
 	}
 }
