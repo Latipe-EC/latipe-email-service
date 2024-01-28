@@ -57,7 +57,7 @@ func startHTTPServer(wg *sync.WaitGroup) {
 	http.Handle("/metrics", promhttp.Handler())
 
 	log.Printf("Init email service http://localhost:5015")
-	err := http.ListenAndServe(":5005", nil)
+	err := http.ListenAndServe(":5015", nil)
 	if err != nil {
 		log.Fatalf("HTTP server failed: %v", err)
 	}
