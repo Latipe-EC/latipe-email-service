@@ -1,6 +1,6 @@
 GmailHostConfig:
   EmailSender: testing.email.it2k2@gmail.com
-  Password:
+  Password: sichqzejazsnllun
   StmpHost: smtp.gmail.com
   StmpPort: 587
 
@@ -15,8 +15,7 @@ EmailTemplate:
 
 RabbitMQ:
   Connection: amqp://guest:guest@localhost:5672/
-  ProducerName: email_service
-  ConsumerName: email_service
+  ServiceName: email_service
   Exchange: email_topic_exchange
 
   UserRegisterTopic:

@@ -14,23 +14,20 @@ import (
 type ConsumerUserRegisterMessage struct {
 	config      *config.Config
 	emailSender service.SenderEmailService
+	conn        *amqp.Connection
 }
 
-func NewConsumerUserRegisterWorker(config *config.Config, senderService service.SenderEmailService) *ConsumerUserRegisterMessage {
+func NewConsumerUserRegisterWorker(config *config.Config, senderService service.SenderEmailService, conn *amqp.Connection) *ConsumerUserRegisterMessage {
 	return &ConsumerUserRegisterMessage{
 		config:      config,
 		emailSender: senderService,
+		conn:        conn,
 	}
 }
 
 func (mq ConsumerUserRegisterMessage) ListenMessageQueue(wg *sync.WaitGroup) {
-	conn, err := amqp.Dial(mq.config.RabbitMQ.Connection)
-	failOnError(err, "Failed to connect to RabbitMQ")
-	log.Printf("[%s] [%s] Comsumer has been connected", "INFO", mq.config.RabbitMQ.UserRegisterTopic.RoutingKey)
-
-	channel, err := conn.Channel()
+	channel, err := mq.conn.Channel()
 	defer channel.Close()
-	defer conn.Close()
 
 	// Khai báo một Exchange loại "direct"
 	err = channel.ExchangeDeclare(
@@ -72,13 +69,13 @@ func (mq ConsumerUserRegisterMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 
 	// declaring consumer with its properties over channel opened
 	msgs, err := channel.Consume(
-		q.Name,                          // queue
-		mq.config.RabbitMQ.ConsumerName, // consumer
-		true,                            // auto ack
-		false,                           // exclusive
-		false,                           // no local
-		false,                           // no wait
-		nil,                             //args
+		q.Name,                         // queue
+		mq.config.RabbitMQ.ServiceName, // consumer
+		true,                           // auto ack
+		false,                          // exclusive
+		false,                          // no local
+		false,                          // no wait
+		nil,                            //args
 	)
 	if err != nil {
 		panic(err)
