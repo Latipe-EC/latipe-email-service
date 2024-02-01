@@ -45,7 +45,7 @@ func (mq ConsumerDeliveryMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 
 	// Tạo hàng đợi
 	q, err := channel.QueueDeclare(
-		"",
+		"delivery_create_account",
 		true,
 		false,
 		false,

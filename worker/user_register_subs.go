@@ -45,7 +45,7 @@ func (mq ConsumerUserRegisterMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 
 	// Tạo hàng đợi
 	q, err := channel.QueueDeclare(
-		"",
+		"user_create_account",
 		true,
 		false,
 		false,

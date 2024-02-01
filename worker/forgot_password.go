@@ -45,7 +45,7 @@ func (mq ConsumerForgotPasswordMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 
 	// Tạo hàng đợi
 	q, err := channel.QueueDeclare(
-		"",
+		"forgot_password",
 		true,
 		false,
 		false,

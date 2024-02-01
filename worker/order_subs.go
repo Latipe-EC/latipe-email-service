@@ -45,7 +45,7 @@ func (mq ConsumerOrderMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 
 	// Tạo hàng đợi
 	q, err := channel.QueueDeclare(
-		"",
+		"purchase_email_commit",
 		true,
 		false,
 		false,

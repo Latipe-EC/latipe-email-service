@@ -45,7 +45,7 @@ func (mq ConsumerPaymentMessage) ListenMessageQueue(wg *sync.WaitGroup) {
 
 	// Tạo hàng đợi
 	q, err := channel.QueueDeclare(
-		"",
+		"payment_checkout_event",
 		true,
 		false,
 		false,
