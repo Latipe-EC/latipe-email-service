@@ -70,7 +70,7 @@ type ForgotPasswordTopic struct {
 
 // Get config path for local or docker
 func getDefaultConfig() string {
-	return "./config/config"
+	return "/config/config"
 }
 
 func NewConfig() (*Config, error) {
