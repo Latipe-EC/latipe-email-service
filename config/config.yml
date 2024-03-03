@@ -1,6 +1,6 @@
 GmailHostConfig:
   EmailSender: testing.email.it2k2@gmail.com
-  Password:
+  Password: sichqzejazsnllun
   StmpHost: smtp.gmail.com
   StmpPort: 587
 
