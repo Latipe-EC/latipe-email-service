@@ -39,12 +39,12 @@ func main() {
 
 	for _, worker := range workers {
 		wg.Add(1)
-		go worker.worker.ListenMessageQueue(&wg)
+		go runWithRecovery(func() { worker.worker.ListenMessageQueue(&wg) })
 		log.Printf("%s subscriber was created", worker.name)
 	}
 
 	wg.Add(1)
-	go startHTTPServer(&wg)
+	go runWithRecovery(func() { startHTTPServer(&wg) })
 
 	wg.Wait()
 }
@@ -61,4 +61,13 @@ func startHTTPServer(wg *sync.WaitGroup) {
 	if err != nil {
 		log.Fatalf("HTTP server failed: %v", err)
 	}
+}
+
+func runWithRecovery(fn func()) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Recovered from panic: %v", r)
+		}
+	}()
+	fn()
 }
