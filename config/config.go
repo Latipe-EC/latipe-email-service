@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"github.com/spf13/viper"
 	"log"
 	"os"
@@ -79,6 +80,8 @@ func NewConfig() (*Config, error) {
 	if path == "" {
 		path = getDefaultConfig()
 	}
+
+	fmt.Printf("path: %s\n", path)
 
 	v := viper.New()
 

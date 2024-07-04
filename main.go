@@ -24,26 +24,41 @@ func main() {
 	rabbitConn := rabbitclient.NewRabbitClientConnection(globalCfg)
 	gmailSender := service.NewGmailSenderEmail(globalCfg)
 
-	workers := []struct {
-		name   string
-		worker message.Worker
-	}{
-		{"OrderMessage", message.NewConsumerOrderWorker(globalCfg, gmailSender, rabbitConn)},
-		{"UserRegister", message.NewConsumerUserRegisterWorker(globalCfg, gmailSender, rabbitConn)},
-		{"DeliveryAccount", message.NewConsumerDeliveryWorker(globalCfg, gmailSender, rabbitConn)},
-		{"ForgotPassword", message.NewConsumerForgotPasswordWorker(globalCfg, gmailSender, rabbitConn)},
-		{"Payment", message.NewConsumerPaymentWorker(globalCfg, gmailSender, rabbitConn)},
-	}
+	orderCons := message.NewConsumerOrderWorker(globalCfg, gmailSender, rabbitConn)
+	userRegCons := message.NewConsumerUserRegisterWorker(globalCfg, gmailSender, rabbitConn)
+	deliRegCons := message.NewConsumerDeliveryWorker(globalCfg, gmailSender, rabbitConn)
+	forgotCons := message.NewConsumerForgotPasswordWorker(globalCfg, gmailSender, rabbitConn)
+	paymentCons := message.NewConsumerPaymentWorker(globalCfg, gmailSender, rabbitConn)
 
 	var wg sync.WaitGroup
-
-	for _, worker := range workers {
-		wg.Add(1)
-		go runWithRecovery(func() { worker.worker.ListenMessageQueue(&wg) })
-		log.Printf("%s subscriber was created", worker.name)
-	}
+	wg.Add(1)
+	go runWithRecovery(func() {
+		orderCons.ListenMessageQueue(&wg)
+	})
 
 	wg.Add(1)
+	go runWithRecovery(func() {
+		userRegCons.ListenMessageQueue(&wg)
+
+	})
+
+	wg.Add(1)
+	go runWithRecovery(func() {
+		deliRegCons.ListenMessageQueue(&wg)
+
+	})
+
+	wg.Add(1)
+	go runWithRecovery(func() {
+		forgotCons.ListenMessageQueue(&wg)
+
+	})
+
+	wg.Add(1)
+	go runWithRecovery(func() {
+		paymentCons.ListenMessageQueue(&wg)
+	})
+
 	go runWithRecovery(func() { startHTTPServer(&wg) })
 
 	wg.Wait()
